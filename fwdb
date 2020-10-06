@@ -1,0 +1,94 @@
+DROP DATABASE IF EXISTS `fwdb`;
+CREATE DATABASE IF NOT EXISTS `fwdb` DEFAULT CHARACTER SET utf8 COLLATE utf8_german2_ci;
+USE `fwdb`;
+
+---------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `person`;
+CREATE TABLE IF NOT EXISTS `person` (
+  `Pnr` int(11) unsigned NOT NULL,
+  `Name` varchar(50) NOT NULL,
+  `Vorname` varchar(50) NOT NULL,
+  `GebDat` date
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `person` (`Pnr`,`Name`,`Vorname`,`GebDat`) 
+VALUES
+(001, 'Grau', 'Martin', '1974-05-06'), 
+(002, 'Grau', 'Martin', '1978-12-13'), 
+(003, 'Gradl', 'Peter', '1972-12-02'),
+(004, 'Gradl', 'Hans', '1972-12-02');
+
+ALTER TABLE `person`
+  ADD PRIMARY KEY (`Pnr`), 
+  ADD KEY (`Name`),
+  ADD KEY (`Vorname`),
+  ADD KEY (`GebDat`);
+  
+---------------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Fahrzeug`;
+CREATE TABLE IF NOT EXISTS `Fahrzeug` (
+  `Pnr` int(11) unsigned NOT NULL,
+  `Kennzeichen` varchar(9) NOT NULL,
+  `FKL` varchar(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `Fahrzeug` (`Pnr`, `Kennzeichen`, `FKL`) 
+VALUES
+(001, 'N-GM 100', 'C'),
+(001, 'N-GM 200', 'A'),
+(002, 'N-GM 300', 'B'),
+(003, 'N-GM 400', 'B'),
+(003, 'N-GM 500', 'C');
+
+ALTER TABLE `Fahrzeug`
+  ADD PRIMARY KEY (`Kennzeichen`);
+  
+  DROP TABLE IF EXISTS `Fahrerlaubnis`;
+  CREATE TABLE IF NOT EXISTS `Fahrerlaubnis` (
+  `Bezeichnung` varchar(1) NOT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `Fahrerlaubnis` (`Bezeichnung`)
+VALUES
+('A'),
+('B'),
+('C');
+
+ALTER TABLE `Fahrerlaubnis`
+  ADD PRIMARY KEY (`Bezeichnung`); 
+
+ALTER TABLE `Fahrzeug`
+	ADD CONSTRAINT `Pnr` FOREIGN KEY (`Pnr`) 
+    REFERENCES `Person` (`Pnr`) 
+    ON UPDATE CASCADE
+    ON DELETE NO ACTION,
+    ADD CONSTRAINT `FKL` FOREIGN KEY (`FKL`) 
+    REFERENCES `Fahrerlaubnis` (`Bezeichnung`)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
+    
+DROP USER IF EXISTS 'fwdbin'@'localhost';
+CREATE USER 'fwdbin'@'localhost';
+SET PASSWORD
+FOR 'fwdbin'@'localhost'
+= PASSWORD('fwdbinpass');
+GRANT ALL PRIVILEGES ON `fwdb`.* TO 'fwdbin'@'localhost';
+
+DROP USER IF EXISTS 'fwdbser'@'localhost';
+CREATE USER 'fwdbser'@'localhost';
+SET PASSWORD
+FOR 'fwdbser'@'localhost'
+= PASSWORD('fwdbinserpass');
+GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO 'fwdbser'@'localhost';
+
+
+
+	
+
+    
+    
+  
+  
+
